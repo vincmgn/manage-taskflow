@@ -9,6 +9,7 @@ interface TaskStore {
   createTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateTask: (id: string, task: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+  deleteMultipleTasks: (ids: string[]) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -57,6 +58,17 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set({ tasks: get().tasks.filter((t) => t.id !== id) });
     } catch  {
       set({ error: 'Failed to delete task' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  deleteMultipleTasks: async (ids) => {
+    set({ isLoading: true, error: null });
+    try {
+      await Promise.all(ids.map(id => TasksAPI.deleteTask(id)));
+      set({ tasks: get().tasks.filter((t) => !ids.includes(t.id)) });
+    } catch {
+      set({ error: 'Failed to delete some tasks' });
     } finally {
       set({ isLoading: false });
     }
