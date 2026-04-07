@@ -10,6 +10,9 @@ export default {
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    updates: {
+      enabled: false,
+    },
     ios: {
       supportsTablet: true,
     },
