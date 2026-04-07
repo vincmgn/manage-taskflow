@@ -10,15 +10,17 @@ const api = axios.create({
 export interface Task {
   id: string;
   title: string;
-  description: string;
+  description?: string | null;
   completed: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string | null;
+  dueDate?: string | null;
+  color?: string | null;
 }
 
 export const TasksAPI = {
   getTasks: () => api.get<Task[]>('/tasks'),
-  createTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => 
+  createTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) =>
     api.post<Task>('/tasks', task),
   updateTask: (id: string, task: Partial<Task>) => 
     api.patch<Task>(`/tasks/${id}`, task),

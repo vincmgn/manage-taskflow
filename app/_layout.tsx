@@ -9,6 +9,15 @@ export default function RootLayout() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="+not-found" />
+        <Stack.Screen
+          name="modals/create-task"
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            title: 'Nouvelle tâche',
+            headerTitleAlign: 'center',
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </>

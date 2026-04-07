@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTaskStore } from '@/stores/taskStore';
 import { Plus, Trash2 } from 'lucide-react-native';
 
 export default function TasksScreen() {
+  const router = useRouter();
   const { tasks, isLoading, error, fetchTasks, deleteTask, updateTask } = useTaskStore();
 
   useEffect(() => {
@@ -32,7 +34,10 @@ export default function TasksScreen() {
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.taskItem}>
+          <View style={[
+            styles.taskItem,
+            item.color ? { borderLeftWidth: 4, borderLeftColor: item.color } : null,
+          ]}>
             <Pressable
               onPress={() => updateTask(item.id, { completed: !item.completed })}
               style={styles.taskContent}>
@@ -42,7 +47,16 @@ export default function TasksScreen() {
               ]}>
                 {item.title}
               </Text>
-              <Text style={styles.taskDescription}>{item.description}</Text>
+              {item.description ? (
+                <Text style={styles.taskDescription}>{item.description}</Text>
+              ) : null}
+              {item.dueDate && (
+                <Text style={styles.taskDueDate}>
+                  {'Échéance : ' + new Date(item.dueDate).toLocaleDateString(undefined, {
+                    year: 'numeric', month: 'short', day: 'numeric',
+                  })}
+                </Text>
+              )}
             </Pressable>
             <Pressable
               onPress={() => deleteTask(item.id)}
@@ -53,7 +67,7 @@ export default function TasksScreen() {
           </View>
         )}
       />
-      <Pressable style={styles.fab} testID='add-button'>
+      <Pressable style={styles.fab} testID='add-button' onPress={() => router.push('/modals/create-task')}>
         <Plus size={24} color="#FFFFFF" />
       </Pressable>
     </View>
@@ -93,6 +107,11 @@ const styles = StyleSheet.create({
   },
   taskDescription: {
     fontSize: 14,
+    color: '#8E8E93',
+    marginTop: 2,
+  },
+  taskDueDate: {
+    fontSize: 12,
     color: '#8E8E93',
     marginTop: 4,
   },
