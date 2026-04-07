@@ -12,12 +12,14 @@ interface UpdateTaskModalProps {
 
 export default function UpdateTaskModal({ visible, task, onClose, onUpdate }: UpdateTaskModalProps) {
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [color, setColor] = useState('');
   const [dueDate, setDueDate] = useState('');
 
   useEffect(() => {
     if (task && visible) {
       setTitle(task.title || '');
+      setDescription(task.description || '');
       setColor(task.color || '');
       setDueDate(task.dueDate || '');
     }
@@ -25,7 +27,7 @@ export default function UpdateTaskModal({ visible, task, onClose, onUpdate }: Up
 
   const handleSubmit = async () => {
     if (task) {
-      await onUpdate(task.id, { title, color: color || null, dueDate: dueDate || null });
+      await onUpdate(task.id, { title, description: description || null, color: color || null, dueDate: dueDate || null });
       Toast.show({
         type: 'success',
         text1: 'Mis à jour',
@@ -54,6 +56,16 @@ export default function UpdateTaskModal({ visible, task, onClose, onUpdate }: Up
             value={title}
             onChangeText={setTitle}
             placeholder="Titre de la tâche"
+          />
+
+          <Text style={styles.inputLabel}>Description</Text>
+          <TextInput
+            style={[styles.input, styles.inputMultiline]}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Description (optionnelle)"
+            multiline
+            numberOfLines={3}
           />
 
           <Text style={styles.inputLabel}>Couleur</Text>
@@ -126,6 +138,10 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     backgroundColor: '#FAFAFA',
+  },
+  inputMultiline: {
+    minHeight: 72,
+    textAlignVertical: 'top',
   },
   modalActions: {
     flexDirection: 'row',
