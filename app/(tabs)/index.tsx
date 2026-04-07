@@ -30,7 +30,7 @@ export default function TasksScreen() {
   if (isLoading && tasks.length === 0) {
     return (
       <View style={[styles.container, styles.centerContainer]}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#007AFF" testID="loading-indicator" />
       </View>
     );
   }

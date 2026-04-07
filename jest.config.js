@@ -7,7 +7,7 @@ const config = {
     },
     setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
     transformIgnorePatterns: [
-        'node_modules/(?!(expo-modules-core|expo-router|react-native|expo|@react-native|@react-navigation)/)',
+        'node_modules/(?!(expo-modules-core|expo-router|expo-asset|expo-constants|expo-file-system|expo-font|react-native|expo|@react-native|@react-navigation|react-native-toast-message)/)',
     ],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
