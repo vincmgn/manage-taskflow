@@ -1,28 +1,43 @@
-import { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import UpdateTaskModal from '@/components/UpdateTaskModal';
+import { Task } from '@/lib/api';
 import { useTaskStore } from '@/stores/taskStore';
-import { Plus, Trash2 } from 'lucide-react-native';
+import { Pencil, Plus, Trash2 } from 'lucide-react-native';
 
 export default function TasksScreen() {
   const router = useRouter();
   const { tasks, isLoading, error, fetchTasks, deleteTask, updateTask } = useTaskStore();
 
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const handleOpenUpdateModal = (task: Task) => {
+    setSelectedTask(task);
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalVisible(false);
+    setSelectedTask(null);
+  };
+
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
-  if (isLoading) {
+  if (isLoading && tasks.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text>Loading tasks...</Text>
+      <View style={[styles.container, styles.centerContainer]}>
+        <ActivityIndicator size="large" color="#007AFF" />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, styles.centerContainer]}>
         <Text style={styles.errorText}>{error}</Text>
       </View>
     );
@@ -40,11 +55,9 @@ export default function TasksScreen() {
           ]}>
             <Pressable
               onPress={() => updateTask(item.id, { completed: !item.completed })}
-              style={styles.taskContent}>
-              <Text style={[
-                styles.taskTitle,
-                item.completed && styles.completedTask
-              ]}>
+              style={styles.taskContent}
+            >
+              <Text style={[styles.taskTitle, item.completed && styles.completedTask]}>
                 {item.title}
               </Text>
               {item.description ? (
@@ -59,17 +72,36 @@ export default function TasksScreen() {
               )}
             </Pressable>
             <Pressable
+              onPress={() => handleOpenUpdateModal(item)}
+              testID={`update-button-${item.id}`}
+              style={styles.actionButton}
+            >
+              <Pencil size={20} color="#007AFF" />
+            </Pressable>
+            <Pressable
               onPress={() => deleteTask(item.id)}
               testID={`delete-button-${item.id}`}
-              style={styles.deleteButton}>
+              style={styles.actionButton}
+            >
               <Trash2 size={20} color="#FF3B30" />
             </Pressable>
           </View>
         )}
       />
-      <Pressable style={styles.fab} testID='add-button' onPress={() => router.push('/modals/create-task')}>
+      <Pressable
+        style={styles.fab}
+        testID="add-button"
+        onPress={() => router.push('/modals/create-task')}
+      >
         <Plus size={24} color="#FFFFFF" />
       </Pressable>
+
+      <UpdateTaskModal
+        visible={isUpdateModalVisible}
+        task={selectedTask}
+        onClose={handleCloseUpdateModal}
+        onUpdate={updateTask}
+      />
     </View>
   );
 }
@@ -78,6 +110,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F2F2F7',
+  },
+  centerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   taskItem: {
     flexDirection: 'row',
@@ -115,7 +151,7 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     marginTop: 4,
   },
-  deleteButton: {
+  actionButton: {
     padding: 8,
   },
   fab: {
