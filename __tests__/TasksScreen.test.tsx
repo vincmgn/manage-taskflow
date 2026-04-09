@@ -5,10 +5,6 @@ import { useTaskStore } from '@/stores/taskStore';
 
 jest.mock('@/stores/taskStore');
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn() }) }));
-jest.mock('@/components/UpdateTaskModal', () => {
-  const { View } = require('react-native');
-  return () => <View />;
-});
 
 describe('TasksScreen', () => {
   const mockTasks = [

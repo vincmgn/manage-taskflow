@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import UpdateTaskModal from '@/components/UpdateTaskModal';
 import { Task } from '@/lib/api';
 import { useTaskStore } from '@/stores/taskStore';
 import { Pencil, Plus, Trash2 } from 'lucide-react-native';
@@ -10,17 +9,8 @@ export default function TasksScreen() {
   const router = useRouter();
   const { tasks, isLoading, error, fetchTasks, deleteTask, updateTask } = useTaskStore();
 
-  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
   const handleOpenUpdateModal = (task: Task) => {
-    setSelectedTask(task);
-    setIsUpdateModalVisible(true);
-  };
-
-  const handleCloseUpdateModal = () => {
-    setIsUpdateModalVisible(false);
-    setSelectedTask(null);
+    router.push({ pathname: '/modals/update-task', params: { id: task.id } });
   };
 
   useEffect(() => {
@@ -95,13 +85,6 @@ export default function TasksScreen() {
       >
         <Plus size={24} color="#FFFFFF" />
       </Pressable>
-
-      <UpdateTaskModal
-        visible={isUpdateModalVisible}
-        task={selectedTask}
-        onClose={handleCloseUpdateModal}
-        onUpdate={updateTask}
-      />
     </View>
   );
 }
