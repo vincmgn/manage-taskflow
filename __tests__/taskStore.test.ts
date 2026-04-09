@@ -19,12 +19,21 @@ describe('taskStore', () => {
   });
 
   it('fetchTasks récupère les tâches depuis l’API', async () => {
+    const mockTasks = [
+      {
+        id: '1',
+        title: 'Task 1',
+        description: '',
+        completed: false,
+        createdAt: '2024-01-01T10:00:00.000Z',
+        updatedAt: '2024-01-01T10:00:00.000Z',
+      },
+    ];
     (TasksAPI.getTasks as jest.Mock).mockResolvedValue({
-      data: [{ id: '1', title: 'Task 1', description: '', completed: false }],
+      data: mockTasks,
     });
-
     await useTaskStore.getState().fetchTasks();
-
-    expect(useTaskStore.getState().tasks).toHaveLength(1);
+    expect(TasksAPI.getTasks).toHaveBeenCalled();
+    expect(useTaskStore.getState().tasks).toEqual(mockTasks);
   });
 });
